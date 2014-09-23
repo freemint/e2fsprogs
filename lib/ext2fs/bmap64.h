@@ -9,6 +9,7 @@
  * %End-Header%
  */
 
+#include <sys/time.h> /* for timeval */
 struct ext2_bmap_statistics {
 	int		type;
 	struct timeval	created;

@@ -110,7 +110,10 @@ OBJS= $(DEBUGFS_LIB_OBJS) $(RESIZE_LIB_OBJS) $(E2IMAGE_LIB_OBJS) \
 	unlink.o \
 	valid_blk.o \
 	version.o \
-	rbtree.o
+	rbtree.o \
+	mint_io.o \
+	xhdi.o
+
 
 SRCS= ext2_err.c \
 	$(srcdir)/alloc.c \
@@ -193,6 +196,8 @@ SRCS= ext2_err.c \
 	$(srcdir)/version.c \
 	$(srcdir)/write_bb_file.c \
 	$(srcdir)/rbtree.c \
+	$(srcdir)/mint_io.c \
+	$(srcdir)/xhdi.o \
 	$(srcdir)/tst_libext2fs.c \
 	$(DEBUG_SRCS)
 

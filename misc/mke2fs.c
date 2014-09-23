@@ -2534,6 +2534,36 @@ static int create_quota_inodes(ext2_filsys fs)
 	return 0;
 }
 
+#ifdef __MINT__
+void
+warn (const char *drv)
+{
+	char c;
+	int check;
+	
+	check = open (drv, O_RDONLY);
+	if (check == -1)
+		return;
+	
+	close (check);
+	
+	if (check < 1024)
+		return;
+	
+	fprintf (stderr, "\n");
+	fprintf (stderr, "WARNING: THIS WILL TOTALLY DESTROY ANY DATA ON %s:\n", drv);
+	fprintf (stderr, "Are you ABSOLUTELY SURE you want to do this? (y/n) ");
+	scanf ("%c", &c);
+	fprintf (stderr, "\n");
+	
+	if (c == 'y' || c == 'Y')
+		return;
+	
+	fprintf (stderr, "Aborted\n");
+	exit (1);
+}
+#endif
+
 int main (int argc, char *argv[])
 {
 	errcode_t	retval = 0;
@@ -2558,6 +2588,11 @@ int main (int argc, char *argv[])
 	set_com_err_gettext(gettext);
 #endif
 	PRS(argc, argv);
+
+#ifdef __MINT__
+	if (!quiet)
+		warn (device_name);
+#endif
 
 #ifdef CONFIG_TESTIO_DEBUG
 	if (getenv("TEST_IO_FLAGS") || getenv("TEST_IO_BLOCK")) {

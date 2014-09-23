@@ -60,6 +60,11 @@
 
 #undef ALIGN_DEBUG
 
+#ifdef __MINT__
+#include <sys/ioctl.h>
+#include "mint_io.h"
+#endif
+
 #include "ext2_fs.h"
 #include "ext2fs.h"
 
@@ -621,6 +626,16 @@ static errcode_t unix_open(const char *name, int flags, io_channel *channel)
 		}
 	}
 #endif
+	
+#ifdef __MINT__
+	{
+		unsigned long block_size;
+		retval = ioctl(data->dev, BLOCKSIZE, &block_size);
+		if (retval == 0)
+			io->block_size = block_size;
+	}
+#endif
+	
 	*channel = io;
 	return 0;
 

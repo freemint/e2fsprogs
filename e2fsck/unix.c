@@ -1186,7 +1186,9 @@ int main (int argc, char *argv[])
 	int qtype = -99;  /* quota type */
 
 	clear_problem_context(&pctx);
+#ifndef __MINT__
 	sigcatcher_setup();
+#endif
 #ifdef MTRACE
 	mtrace();
 #endif

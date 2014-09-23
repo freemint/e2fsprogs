@@ -51,6 +51,11 @@ struct mem_file {
 	int	ptr;
 };
 
+#ifdef __MINT__
+/* Avoid clash with mint/dcntl.h */
+#define fs_info _fs_info
+#endif
+
 struct fs_info {
 	char  *device;
 	char  *mountpt;
