@@ -83,7 +83,7 @@ init_XHDI (void)
 			magic_test--;
 			if (*magic_test == XHDIMAGIC)
 			{
-				XHDI = val;
+				XHDI = (void *)val;
 			}
 		}
 	}

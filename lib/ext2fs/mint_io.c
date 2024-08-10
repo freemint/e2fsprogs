@@ -68,31 +68,14 @@
 
 int __open_v(const char *_filename, int iomode, va_list argp);
 
-int open(__const char *__file, int __oflag, ...) __THROW;
-int __open(__const char *__file, int __oflag, ...) __THROW;
-
-int ioctl(int fd, int cmd, void *arg);
-int __ioctl(int fd, int cmd, void *arg);
-
-int fsync(int __fd) __THROW;
-int __fsync(int __fd) __THROW;
-
-__off_t lseek(int __fd, __off_t __offset, int __whence) __THROW;
-__off_t __lseek(int __fd, __off_t __offset, int __whence) __THROW;
-
-int close(int __fd) __THROW;
-int __close(int __fd) __THROW;
-
-ssize_t read(int __fd, void *__buf, size_t __nbytes) __THROW;
-ssize_t __read(int __fd, void *__buf, size_t __nbytes) __THROW;
-
-ssize_t write(int __fd, __const void *__buf, size_t __n) __THROW;
-ssize_t __write(int __fd, __const void *__buf, size_t __n) __THROW;
-
-int fstat(int __fd, struct stat *__buf) __THROW;
-int __fstat(int __fd, struct stat *__buf) __THROW;
-
-int stat(const char *filename, struct stat *st) __THROW;
+typeof(open) __open;
+typeof(ioctl) __ioctl;
+typeof(fsync) __fsync;
+typeof(lseek) __lseek;
+typeof(close) __close;
+typeof(read) __read;
+typeof(write) __write;
+typeof(fstat) __fstat;
 
 
 struct device
@@ -406,7 +389,7 @@ rwabs_xhdi(struct device *mydev, ushort rw, void *buf, ulong size, ulong recno)
 # define max(a,b)	(a > b ? a : b)
 # define min(a,b)	(a > b ? b : a)
 
-int
+ssize_t
 read(int fd, void *_buf, size_t size)
 {
 	struct device *mydev = get_device(fd);
@@ -518,7 +501,7 @@ out:
 }
 }
 
-int
+ssize_t
 write(int fd, const void *_buf, size_t size)
 {
 	struct device *mydev = get_device(fd);

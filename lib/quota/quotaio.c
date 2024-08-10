@@ -64,7 +64,7 @@ const char *quota_get_qf_path(const char *mntpt, int qtype, int fmt,
 		return NULL;
 
 	strncpy(path_buf, mntpt, path_buf_size);
-	strncat(path_buf, "/", 1);
+	strncat(path_buf, "/", path_buf_size - strlen(path_buf));
 	strncat(path_buf, quota_get_qf_name(qtype, fmt, qf_name),
 		path_buf_size - strlen(path_buf));
 

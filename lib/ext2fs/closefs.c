@@ -311,7 +311,7 @@ errcode_t ext2fs_flush2(ext2_filsys fs, int flags)
 
 	/* swap the group descriptors */
 	for (j = 0; j < fs->group_desc_count; j++) {
-		gdp = ext2fs_group_desc(fs, group_shadow, j);
+		gdp = ext2fs_group_desc(fs, (struct opaque_ext2_group_desc *)group_shadow, j);
 		ext2fs_swap_group_desc2(fs, gdp);
 	}
 #else
