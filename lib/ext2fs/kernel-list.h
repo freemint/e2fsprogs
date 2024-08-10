@@ -1,7 +1,7 @@
 #ifndef _LINUX_LIST_H
 #define _LINUX_LIST_H
 
-#include "compiler.h"
+#include "e2_compiler.h"
 
 /*
  * Simple doubly linked list implementation.

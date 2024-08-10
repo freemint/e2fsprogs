@@ -71,6 +71,11 @@
 
 #undef ALIGN_DEBUG
 
+#ifdef __MINT__
+#include <sys/ioctl.h>
+#include "mint_io.h"
+#endif
+
 #include "ext2_fs.h"
 #include "ext2fs.h"
 #include "ext2fsP.h"
@@ -859,6 +864,16 @@ static errcode_t unix_open_channel(const char *name, int fd,
 		}
 	}
 #endif
+	
+#ifdef __MINT__
+	{
+		unsigned long block_size;
+		retval = ioctl(data->dev, BLOCKSIZE, &block_size);
+		if (retval == 0)
+			io->block_size = block_size;
+	}
+#endif
+	
 	*channel = io;
 	return 0;
 
@@ -1188,7 +1203,7 @@ static errcode_t unix_cache_readahead(io_channel channel,
 				      unsigned long long block,
 				      unsigned long long count)
 {
-#ifdef POSIX_FADV_WILLNEED
+#if defined(POSIX_FADV_WILLNEED) && !defined(__MINT__)
 	struct unix_private_data *data;
 
 	data = (struct unix_private_data *)channel->private_data;

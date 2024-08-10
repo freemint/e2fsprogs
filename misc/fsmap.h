@@ -83,7 +83,11 @@ fsmap_advance(
 #define FMR_OWN_UNKNOWN		FMR_OWNER(0, 2) /* unknown owner */
 #define FMR_OWN_METADATA	FMR_OWNER(0, 3) /* metadata */
 
+#ifdef __MINT__
+#define FS_IOC_GETFSMAP		(('f' << 8) | 59)
+#else
 #define FS_IOC_GETFSMAP		_IOWR('X', 59, struct fsmap_head)
+#endif
 #endif /* FS_IOC_GETFSMAP */
 
 #endif

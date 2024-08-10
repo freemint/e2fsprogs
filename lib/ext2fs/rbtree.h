@@ -96,7 +96,7 @@ static inline struct page * rb_insert_page_cache(struct inode * inode,
 
 #include <stdlib.h>
 #include <stdint.h>
-#include "compiler.h"
+#include "e2_compiler.h"
 
 #if __GNUC_PREREQ (4, 6)
 #pragma GCC diagnostic push

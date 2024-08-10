@@ -1415,7 +1415,9 @@ int main (int argc, char *argv[])
 	struct ext2fs_journal_params jparams;
 
 	clear_problem_context(&pctx);
+#ifndef __MINT__
 	sigcatcher_setup();
+#endif
 #ifdef MTRACE
 	mtrace();
 #endif

@@ -60,6 +60,11 @@
 #define BLKGETSIZE DKIOCGETBLOCKCOUNT32
 #endif /* APPLE_DARWIN */
 
+#ifdef __MINT__
+#include <sys/ioctl.h>
+#include "mint_io.h"
+#endif
+
 #include "ext2_fs.h"
 #include "ext2fs.h"
 

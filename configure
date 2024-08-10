@@ -5539,7 +5539,7 @@ ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $
 ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 if test "$GCC" = yes; then
-   RDYNAMIC="-rdynamic"
+   RDYNAMIC=""
 
 fi
 ac_ext=c
@@ -14809,7 +14809,7 @@ fi
 printf "%s\n" "$UNI_DIFF_OPTS" >&6; }
 
 case "$host_os" in
-linux*)
+linux*|mint*)
 
 printf "%s\n" "#define HAVE_EXT2_IOCTLS 1" >>confdefs.h
 

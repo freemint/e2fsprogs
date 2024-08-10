@@ -9,6 +9,7 @@
  * %End-Header%
  */
 
+#ifndef __MINT__
 #include "config.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -443,4 +444,5 @@ int main(int argc, char** argv)
 	sleep(10);
 	exit(0);
 }
+#endif
 #endif

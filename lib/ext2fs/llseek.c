@@ -85,6 +85,8 @@ ext2_loff_t ext2fs_llseek (int fd, ext2_loff_t offset, int origin)
 
 #else /* !linux */
 
+#ifndef __MINT__
+
 #ifndef EINVAL
 #define EINVAL EXT2_ET_INVALID_ARGUMENT
 #endif
@@ -102,6 +104,8 @@ ext2_loff_t ext2fs_llseek (int fd, ext2_loff_t offset, int origin)
 	return lseek (fd, (off_t) offset, origin);
 #endif
 }
+
+#endif /* __MINT__ */
 
 #endif 	/* linux */
 

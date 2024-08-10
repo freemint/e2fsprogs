@@ -106,7 +106,7 @@ AC_MSG_ERROR([--with-ldopts no longer supported; use LDFLAGS= instead]))
 dnl
 AC_PROG_CC
 if test "$GCC" = yes; then
-   RDYNAMIC="-rdynamic"
+   RDYNAMIC=""
    AC_SUBST(RDYNAMIC)
 fi
 AC_PROG_CPP
@@ -1500,7 +1500,7 @@ dnl
 dnl We use the EXT2 ioctls only under Linux
 dnl
 case "$host_os" in
-linux*)
+linux*|mint*)
 	AC_DEFINE(HAVE_EXT2_IOCTLS, 1, [Define to 1 if Ext2 ioctls present])
 	;;
 esac
