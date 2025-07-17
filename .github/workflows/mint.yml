@@ -1,0 +1,90 @@
+name: CI
+on:
+  push:
+    branches: [ mint-1.47 ]
+  workflow_dispatch:
+    branches: [ mint-1.47 ]
+env:
+  VERSION: -1.47.1
+  DEF_CFLAGS: -O2 -fomit-frame-pointer -Wall
+  PACKAGENAME: e2fsprogs
+  CROSS_TOOL: m68k-atari-mint
+
+jobs:
+  mint-build:
+    name: Cross-compile for MiNT (${{matrix.arch}})
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+        - { arch: 68000,    cflags: -m68000,    bin: -bin-mint,    artifact: e2fsprogs-68000 }
+        - { arch: 68020,    cflags: -m68020-60, bin: -bin-mint020, artifact: e2fsprogs-68020 }
+        - { arch: coldfire, cflags: -mcpu=5475, bin: -bin-mintv4e, artifact: e2fsprogs-coldfire }
+    runs-on: ubuntu-latest
+    env:
+      VERSIONBIN: -bin-mint${{matrix.cflags}}
+    steps:
+    - uses: actions/checkout@v4
+    - name: Install packages
+      run: |
+        SYSROOT_DIR="/" ./.scripts/install-freemint.sh binutils gcc mintbin
+        ./.scripts/install-freemint.sh mintlib fdlibm
+    - name: build
+      run: |
+        ./configure --host=$CROSS_TOOL --prefix=/usr --sysconfdir=/etc --sbindir=/sbin --disable-nls --without-pthread CFLAGS="${{matrix.cflags}} $DEF_CFLAGS -O2 -fomit-frame-pointer" LDFLAGS="${{matrix.cflags}} -s"
+        make -j8 install-strip V=1 DESTDIR=$PWD/installdir
+        cd installdir
+        rm -rf usr/lib
+        rm -rf usr/share/info
+        rm -rf usr/share/ss
+        rm -rf usr/share/et
+        rm -f sbin/e2label
+        rm -f sbin/findfs
+        rm -f sbin/e2mmpstatus
+        rm -f sbin/mkfs.ext2
+        rm -f sbin/mkfs.ext3
+        rm -f sbin/mkfs.ext4
+        rm -f sbin/fsck.ext2
+        rm -f sbin/fsck.ext3
+        rm -f sbin/fsck.ext4
+        ln -s tune2fs sbin/e2label
+        ln -s tune2fs sbin/findfs
+        ln -s mke2fs sbin/mkfs.ext2
+        ln -s mke2fs sbin/mkfs.ext3
+        ln -s mke2fs sbin/mkfs.ext4
+        ln -s fsck sbin/fsck.ext2
+        ln -s fsck sbin/fsck.ext3
+        ln -s fsck sbin/fsck.ext4
+        ln -s dumpe2fs sbin/e2mmpstatus
+        rm -f usr/share/man/man5/ext3.5
+        rm -f usr/share/man/man5/ext4.5
+        rm -f usr/share/man/man8/e2label.8
+        rm -f usr/share/man/man8/mkfs.ext2.8
+        rm -f usr/share/man/man8/mkfs.ext3.8
+        rm -f usr/share/man/man8/mkfs.ext4.8
+        rm -f usr/share/man/man8/fsck.ext2.8
+        rm -f usr/share/man/man8/fsck.ext3.8
+        rm -f usr/share/man/man8/fsck.ext4.8
+        gzip -9 usr/share/man/*/*
+        ln -s ext2.5.gz usr/share/man/man5/ext3.5.gz
+        ln -s ext2.5.gz usr/share/man/man5/ext4.5.gz
+        ln -s tune2fs.8.gz usr/share/man/man8/e2label.8.gz
+        ln -s mke2fs.8.gz usr/share/man/man8/mkfs.ext2.8.gz
+        ln -s mke2fs.8.gz usr/share/man/man8/mkfs.ext3.8.gz
+        ln -s mke2fs.8.gz usr/share/man/man8/mkfs.ext4.8.gz
+        ln -s fsck.8.gz usr/share/man/man8/fsck.ext2.8.gz
+        ln -s fsck.8.gz usr/share/man/man8/fsck.ext3.8.gz
+        ln -s fsck.8.gz usr/share/man/man8/fsck.ext4.8.gz
+        VERSIONBUILD=-`date +%Y%m%d`
+        VERSIONPATCH=-git-$(echo ${GITHUB_SHA} | cut -c 1-7)
+        tar --owner=0 --group=0 -Jcvf ../$PACKAGENAME$VERSION$VERSIONPATCH$VERSIONBIN$VERSIONBUILD.tar.xz *
+    - if: failure()
+      uses: actions/upload-artifact@v4
+      with:
+        name: failure-logs-${{ matrix.arch }}
+        path: config.log
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ matrix.artifact }}
+        path: e2fsprogs*.tar.xz
