@@ -32,6 +32,8 @@
  * 
  */
 
+#ifdef __MINT__
+
 # include "xhdi.h"
 
 # include <stdio.h>
@@ -39,7 +41,6 @@
 # include <errno.h>
 # include <mintbind.h>
 # include <mint/cookie.h>
-
 
 /*
  * internal usage
@@ -575,3 +576,5 @@ XHReaccess (ushort major, ushort minor)
 	
 	CALL;
 }
+
+#endif
