@@ -1,5 +1,7 @@
 name: CI
-on: [push]
+on:
+  push:
+    branches: [ none ]
 env:
   DEF_CFLAGS: -O2 -g -Wall
 
