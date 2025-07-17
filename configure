@@ -15497,11 +15497,11 @@ if test x$ac_prog_cxx_stdcxx = xno
 then :
   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for $CXX option to enable C++11 features" >&5
 printf %s "checking for $CXX option to enable C++11 features... " >&6; }
-if test ${ac_cv_prog_cxx_cxx11+y}
+if test ${ac_cv_prog_cxx_11+y}
 then :
   printf %s "(cached) " >&6
 else $as_nop
-  ac_cv_prog_cxx_cxx11=no
+  ac_cv_prog_cxx_11=no
 ac_save_CXX=$CXX
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
@@ -15543,11 +15543,11 @@ if test x$ac_prog_cxx_stdcxx = xno
 then :
   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for $CXX option to enable C++98 features" >&5
 printf %s "checking for $CXX option to enable C++98 features... " >&6; }
-if test ${ac_cv_prog_cxx_cxx98+y}
+if test ${ac_cv_prog_cxx_98+y}
 then :
   printf %s "(cached) " >&6
 else $as_nop
-  ac_cv_prog_cxx_cxx98=no
+  ac_cv_prog_cxx_98=no
 ac_save_CXX=$CXX
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
@@ -16153,6 +16153,9 @@ for i in MCONFIG Makefile \
 	fi
 done
 ac_config_files="$ac_config_files $outlist"
+
+ac_config_commands="$ac_config_commands mke2fs-conf"
+
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -16859,6 +16862,7 @@ do
     "lib/config.h") CONFIG_HEADERS="$CONFIG_HEADERS lib/config.h" ;;
     "po-directories") CONFIG_COMMANDS="$CONFIG_COMMANDS po-directories" ;;
     "$outlist") CONFIG_FILES="$CONFIG_FILES $outlist" ;;
+    "mke2fs-conf") CONFIG_COMMANDS="$CONFIG_COMMANDS mke2fs-conf" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
   esac
@@ -17570,6 +17574,13 @@ printf "%s\n" "$as_me: executing $ac_file commands" >&6;}
         ;;
       esac
     done ;;
+    "mke2fs-conf":C)
+case "$ac_cs_config" in
+*m68k-atari-mint*)
+  sed -e 's/large_file,//' ${srcdir}/misc/mke2fs.conf.in > ${srcdir}/misc/mke2fs.conf.custom.in
+  ;;
+esac
+ ;;
 
   esac
 done # for ac_tag

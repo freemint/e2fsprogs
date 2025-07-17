@@ -235,3 +235,4 @@ util/install-symlink
 util/subst
 util/subst.conf
 Meta
+misc/mke2fs.conf.custom.in

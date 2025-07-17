@@ -2003,5 +2003,13 @@ for i in MCONFIG Makefile \
 	fi
 done
 AC_CONFIG_FILES([$outlist])
+AC_CONFIG_COMMANDS([mke2fs-conf],[[
+case "$ac_cs_config" in
+*m68k-atari-mint*)
+  sed -e 's/large_file,//' ${srcdir}/misc/mke2fs.conf.in > ${srcdir}/misc/mke2fs.conf.custom.in
+  ;;
+esac
+]])
+
 AC_OUTPUT
 if test -f util/gen-tarball; then chmod +x util/gen-tarball; fi
