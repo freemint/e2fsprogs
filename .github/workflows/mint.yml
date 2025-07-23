@@ -52,9 +52,9 @@ jobs:
         ln -s mke2fs sbin/mkfs.ext2
         ln -s mke2fs sbin/mkfs.ext3
         ln -s mke2fs sbin/mkfs.ext4
-        ln -s fsck sbin/fsck.ext2
-        ln -s fsck sbin/fsck.ext3
-        ln -s fsck sbin/fsck.ext4
+        ln -s e2fsck sbin/fsck.ext2
+        ln -s e2fsck sbin/fsck.ext3
+        ln -s e2fsck sbin/fsck.ext4
         ln -s dumpe2fs sbin/e2mmpstatus
         rm -f usr/share/man/man5/ext3.5
         rm -f usr/share/man/man5/ext4.5
