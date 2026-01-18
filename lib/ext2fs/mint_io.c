@@ -236,7 +236,7 @@ open(const char *filename, int iomode, ...)
 		DEBUG((stderr, "readonly mode!\n"));
 		sync();
 	}
-	else if (Dlock(1, mydev->drv))
+	else if ((ret = Dlock(1, mydev->drv)) && ret != -ENOSYS)
 	{
 		fprintf(stderr, "Can't lock partition %c:!\n", mydev->drv+'A');
 		
@@ -331,7 +331,7 @@ close(int fd)
 	{
 		;
 	}
-	else if (Dlock(0, mydev->drv))
+	else if ((ret = Dlock(0, mydev->drv)) && ret != -ENOSYS)
 	{
 		fprintf(stderr, "Can't unlock partition %c:!\n", 'A'+mydev->drv);
 		
