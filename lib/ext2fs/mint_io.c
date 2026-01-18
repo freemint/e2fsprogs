@@ -413,6 +413,10 @@ read(int fd, void *_buf, size_t size)
 	DEBUG((stderr, "read: xhdi %d %ld\n", fd + 1024, (long)size));
 	if (todo == 0)
 		return 0;
+
+	/* EOF check */
+	if (mydev->pos >= (loff_t) mydev->xhdi_blocks * mydev->xhdi_blocksize)
+		return 0;
 	
 	/* partial block copy
 	 */
@@ -531,6 +535,13 @@ write(int fd, const void *_buf, size_t size)
 	
 	if (todo == 0)
 		return 0;
+
+	/* EOF check */
+	if (mydev->pos >= (loff_t) mydev->xhdi_blocks * mydev->xhdi_blocksize)
+	{
+		__set_errno(ENOSPC);
+		return -1;
+	}
 	
 	/* partial block copy
 	 */
