@@ -1,6 +1,6 @@
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
-VPATH = @srcdir@
+VPATH = @srcdir@:@srcdir@/libIO
 top_builddir = ../..
 my_dir = lib/ext2fs
 INSTALL = @INSTALL@
@@ -9,6 +9,7 @@ DEPEND_CFLAGS = -I$(top_srcdir)/debugfs -I$(srcdir)/../../e2fsck -DDEBUGFS
 # This nastiness is needed because of jfs_user.h hackery; when we finally
 # clean up this mess, we should be able to drop it
 DEBUGFS_CFLAGS = -I$(srcdir)/../../e2fsck $(ALL_CFLAGS) -DDEBUGFS
+LOCAL_CFLAGS = -I$(srcdir)/libIO -DE2FSPROGS_WRAPPER
 
 @MCONFIG@
 
@@ -234,8 +235,8 @@ SRCS= ext2_err.c \
 	$(srcdir)/version.c \
 	$(srcdir)/write_bb_file.c \
 	$(srcdir)/rbtree.c \
-	$(srcdir)/mint_io.c \
-	$(srcdir)/xhdi.o \
+	$(srcdir)/libIO/mint_io.c \
+	$(srcdir)/libIO/xhdi.c \
 	$(srcdir)/tst_libext2fs.c \
 	$(DEBUG_SRCS)
 

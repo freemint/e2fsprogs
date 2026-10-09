@@ -1,0 +1,3 @@
+[submodule "lib/ext2fs/libIO"]
+	path = lib/ext2fs/libIO
+	url = https://github.com/freemint/libIO.git
