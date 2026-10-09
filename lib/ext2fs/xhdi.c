@@ -138,12 +138,16 @@ init_XHDI (void)
 long
 XHGetVersion (void)
 {
+	/* padded to 4 bytes: gcc passes a 2-byte struct in the upper half of
+	 * its stack slot, where XHDI does not expect the opcode */
 	struct args_XHGetVersion
 	{
 		ushort	opcode;
+		ushort	pad;
 	}
 	args = 
 	{
+		0,
 		0
 	};
 	
@@ -270,13 +274,17 @@ XHEject (ushort major, ushort minor, ushort do_eject, ushort key)
 long
 XHDrvMap (void)
 {
+	/* padded to 4 bytes: gcc passes a 2-byte struct in the upper half of
+	 * its stack slot, where XHDI does not expect the opcode */
 	struct args_XHDrvMap
 	{
 		ushort	opcode;
+		ushort	pad;
 	}
 	args =
 	{
-		6
+		6,
+		0
 	};
 	
 	CALL;
