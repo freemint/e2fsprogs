@@ -1,28 +1,27 @@
-name: CI
+name: MiNT
 on:
   push:
     branches: [ mint-1.47 ]
-  workflow_dispatch:
+    tags: [ 'v*-mint' ]
+  pull_request:
     branches: [ mint-1.47 ]
+  workflow_dispatch:
 env:
-  VERSION: -1.47.1
   DEF_CFLAGS: -O2 -fomit-frame-pointer -Wall
   PACKAGENAME: e2fsprogs
   CROSS_TOOL: m68k-atari-mint
 
 jobs:
   mint-build:
-    name: Cross-compile for MiNT (${{matrix.arch}})
+    name: Cross-compile for MiNT (${{ matrix.cpu }})
     strategy:
       fail-fast: false
       matrix:
         include:
-        - { arch: 68000,    cflags: -m68000,    bin: -bin-mint,    artifact: e2fsprogs-68000 }
-        - { arch: 68020,    cflags: -m68020-60, bin: -bin-mint020, artifact: e2fsprogs-68020 }
-        - { arch: coldfire, cflags: -mcpu=5475, bin: -bin-mintv4e, artifact: e2fsprogs-coldfire }
+        - { cpu: '000', cflags: -m68000 }
+        - { cpu: '020', cflags: -m68020-60 }
+        - { cpu: 'v4e', cflags: -mcpu=5475 }
     runs-on: ubuntu-latest
-    env:
-      VERSIONBIN: -bin-mint${{matrix.cflags}}
     steps:
     - uses: actions/checkout@v4
       with:
@@ -33,8 +32,9 @@ jobs:
         ./.scripts/install-freemint.sh mintlib fdlibm
     - name: build
       run: |
-        ./configure --host=$CROSS_TOOL --prefix=/usr --sysconfdir=/etc --sbindir=/sbin --disable-nls --without-pthread CFLAGS="${{matrix.cflags}} $DEF_CFLAGS -O2 -fomit-frame-pointer" LDFLAGS="${{matrix.cflags}} -s"
-        make -j8 install-strip V=1 DESTDIR=$PWD/installdir
+        ./configure --host=$CROSS_TOOL --prefix=/usr --sysconfdir=/etc --sbindir=/sbin --disable-nls --without-pthread CFLAGS="${{ matrix.cflags }} $DEF_CFLAGS" LDFLAGS="${{ matrix.cflags }} -s"
+        make -j$(nproc) install-strip V=1 DESTDIR=$PWD/installdir
+        if [ "$GITHUB_REF_TYPE" = tag ]; then VERSION=${GITHUB_REF_NAME#v}; VERSION=${VERSION%-mint}; else VERSION=git-${GITHUB_SHA::7}; fi
         cd installdir
         rm -rf usr/lib
         rm -rf usr/share/info
@@ -77,16 +77,38 @@ jobs:
         ln -s fsck.8.gz usr/share/man/man8/fsck.ext2.8.gz
         ln -s fsck.8.gz usr/share/man/man8/fsck.ext3.8.gz
         ln -s fsck.8.gz usr/share/man/man8/fsck.ext4.8.gz
-        VERSIONBUILD=-`date +%Y%m%d`
-        VERSIONPATCH=-git-$(echo ${GITHUB_SHA} | cut -c 1-7)
-        tar --owner=0 --group=0 -Jcvf ../$PACKAGENAME$VERSION$VERSIONPATCH$VERSIONBIN$VERSIONBUILD.tar.xz *
+        tar --owner=0 --group=0 -cjvf ../$PACKAGENAME-$VERSION-mint${{ matrix.cpu }}.tar.bz2 *
     - if: failure()
       uses: actions/upload-artifact@v4
       with:
-        name: failure-logs-${{ matrix.arch }}
+        name: failure-logs-${{ matrix.cpu }}
         path: config.log
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: ${{ matrix.artifact }}
-        path: e2fsprogs*.tar.xz
+        name: ${{ env.PACKAGENAME }}-mint${{ matrix.cpu }}
+        path: ${{ env.PACKAGENAME }}-*.tar.bz2
+
+  # A tag gets its archives attached to the release of that name, which is
+  # created as a draft if there is none yet
+  release:
+    if: github.ref_type == 'tag'
+    needs: mint-build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+    - uses: actions/download-artifact@v4
+      with:
+        merge-multiple: true
+    - name: Attach archives
+      env:
+        GH_TOKEN: ${{ github.token }}
+        GH_REPO: ${{ github.repository }}
+      run: |
+        if gh release view "$GITHUB_REF_NAME" > /dev/null 2>&1
+        then
+          gh release upload "$GITHUB_REF_NAME" $PACKAGENAME-*.tar.bz2 --clobber
+        else
+          gh release create "$GITHUB_REF_NAME" $PACKAGENAME-*.tar.bz2 --draft --verify-tag --title "$PACKAGENAME ${GITHUB_REF_NAME#v}" --notes ""
+        fi
