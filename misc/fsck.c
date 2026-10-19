@@ -1098,6 +1098,17 @@ static void signal_cancel(int sig FSCK_ATTR((unused)))
 }
 #endif
 
+#ifdef __MINT__
+/* A drive such as "C:", which libIO opens through XHDI */
+static int is_drive(const char *arg)
+{
+	return isalnum((unsigned char) arg[0]) && arg[1] == ':' &&
+		(!arg[2] || ((arg[2] == '/' || arg[2] == '\\') && !arg[3]));
+}
+#else
+#define is_drive(arg) 0
+#endif
+
 static void PRS(int argc, char *argv[])
 {
 	int	i, j;
@@ -1127,7 +1138,8 @@ static void PRS(int argc, char *argv[])
 		arg = argv[i];
 		if (!arg)
 			continue;
-		if ((arg[0] == '/' && !opts_for_fsck) || strchr(arg, '=')) {
+		if (((arg[0] == '/' || is_drive(arg)) && !opts_for_fsck) ||
+		    strchr(arg, '=')) {
 			if (num_devices >= MAX_DEVICES) {
 				fprintf(stderr, _("%s: too many devices\n"),
 					progname);
