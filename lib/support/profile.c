@@ -323,6 +323,11 @@ profile_init(const char * const *files, profile_t *ret_profile)
 			free_list(array);
 		array = NULL;
 		retval = get_dirlist(*fs, &array);
+#ifdef __MINT__
+		/* MiNT's opendir() fails with ENOENT on a regular file */
+		if (retval == ENOENT)
+			retval = ENOTDIR;
+#endif
 		if (retval == 0) {
 			if (!array)
 				continue;
